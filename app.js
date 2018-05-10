@@ -12,8 +12,10 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
 const indexRouter = require('./routes/index');
-// const movies = require('./routes/movies');
 const auth = require('./routes/auth');
+const categories = require('./routes/categories');
+const accounts = require('./routes/accounts');
+const records = require('./routes/records');
 
 const app = express();
 
@@ -51,9 +53,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
-// app.use('/movies', movies);
+app.use('/categories', categories);
 app.use('/auth', auth);
-
+app.use('/accounts', accounts);
+app.use('/records', records);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
