@@ -9,12 +9,6 @@ const accountSchema = new Schema({
     type: String,
     required: true
   },
-  // records: [{
-  //   category: String,
-  //   date: Date,
-  //   amount: Number,
-  //   type: String
-  // }],
   owner: {
     type: ObjectId,
     ref: 'User'
