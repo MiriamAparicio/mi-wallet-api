@@ -8,7 +8,8 @@ router.get('/latest', (req, res, next) => {
     return res.status(401).json({ code: 'unauthorized' });
   }
   Record.find({ owner: req.session.currentUser._id })
-  // @todo sort and limit
+    .sort({date: -1})
+    .limit(5)
     .populate('account')
     .then((result) => {
       res.json(result);
@@ -40,9 +41,6 @@ router.post('/', (req, res, next) =>  {
       if (!result.owner.equals(req.session.currentUser._id)) {
         return res.status(401).json({ code: 'unauthorized' });
       }
-      //@ todo 
-      // const record = new Record(req.body)
-      // record.owner = req.session.currentUser._id
       const newRecord = new Record(req.body);
       record.owner = req.session.currentUser._id;
     });

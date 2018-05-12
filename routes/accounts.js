@@ -22,7 +22,6 @@ router.get('/:id', (req, res, next) => {
   }
   Account.findById(req.params.id)
     .then((result) => {
-      // @todo authorization - check result.owner.equals(req.session.currentUser._id) > 401
       if (!result.owner.equals(req.session.currentUser._id)) {
         return res.status(401).json({ code: 'unauthorized' });
       }      
@@ -36,7 +35,6 @@ router.get('/:id/records', (req, res, next) => {
     return res.status(401).json({ code: 'unauthorized' });
   }
   Record.find({ account: req.params.id, owner: req.session.currentUser._id })
-    // @todo sort by latest
     .then((result) => {
       res.json(result);
     })
@@ -54,13 +52,15 @@ router.post('/', (req, res, next) => {
     return res.status(422).json({ code: 'validation' });
   }
 
-  Account.findOne({ name: name })
-    .then((accountExist) => {
+  const owner = req.session.currentUser._id;
+
+  Account.findOne({ name: name, owner: owner })
+    .then((result) => {
       if (result) {
         return res.status(422).json({ code: 'account-exist' });
       }
 
-      const owner = req.session.currentUser._id;
+      
       const newAccount = new Account({
         name,
         owner
