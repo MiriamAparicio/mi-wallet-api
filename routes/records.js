@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Record = require('../models/record');
+const Account = require('../models/account')
 
 router.get('/latest', (req, res, next) => {
   if (!req.session.currentUser) {
@@ -36,13 +37,30 @@ router.post('/', (req, res, next) =>  {
   if (!req.session.currentUser) {
     return res.status(401).json({ code: 'unauthorized' });
   }
-  Account.findById(req.body.account)
+  const category = req.body.category;
+  const amount = req.body.amount;
+  const date = req.body.date;
+  const type = req.body.type.toLowerCase();
+
+  Account.find({$and:[{name: req.body.account},{owner: req.session.currentUser}]})
     .then((result) => {
-      if (!result.owner.equals(req.session.currentUser._id)) {
-        return res.status(401).json({ code: 'unauthorized' });
-      }
-      const newRecord = new Record(req.body);
-      record.owner = req.session.currentUser._id;
+      const account = result[0]._id;
+      const owner = req.session.currentUser._id;
+      const newRecord = new Record ({
+        owner,
+        account,
+        category,
+        date,
+        amount,
+        type
+      });
+
+      newRecord.save()
+        .then((result) => {
+          res.status(201).json(result);
+        })
+        .catch(next);
+
     });
 
 })

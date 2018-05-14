@@ -8,7 +8,7 @@ const ObjectId = Schema.Types.ObjectId;
 const recordSchema = new Schema({
     owner: {
         type: ObjectId,
-        ref: 'Onwer'
+        ref: 'Owner'
     },    
     account: {
         type: ObjectId,
