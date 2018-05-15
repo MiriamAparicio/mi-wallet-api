@@ -35,6 +35,7 @@ router.get('/:id/records', (req, res, next) => {
     return res.status(401).json({ code: 'unauthorized' });
   }
   Record.find({ account: req.params.id, owner: req.session.currentUser._id })
+    .sort({ date: -1 })
     .then((result) => {
       res.json(result);
     })
@@ -59,7 +60,6 @@ router.post('/', (req, res, next) => {
       if (result) {
         return res.status(422).json({ code: 'account-exist' });
       }
-
       
       const newAccount = new Account({
         name,

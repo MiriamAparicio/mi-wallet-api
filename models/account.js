@@ -12,6 +12,10 @@ const accountSchema = new Schema({
   owner: {
     type: ObjectId,
     ref: 'User'
+  },
+  balance: {
+    type: Number,
+    default: 0
   }
 });
 

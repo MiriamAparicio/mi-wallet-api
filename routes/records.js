@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const pubsub = require('pubsub-js');
 
 const Record = require('../models/record');
-const Account = require('../models/account')
+const Account = require('../models/account');
 
 router.get('/', (req, res, next) => {
   if (!req.session.currentUser) {
@@ -70,8 +71,10 @@ router.post('/', (req, res, next) =>  {
         .then((result) => {
           res.status(201).json(newRecord);
         })
+        .then(() => {
+          pubsub.publish("record.new", newRecord);
+        })
         .catch(next);
-
     });
 
 })

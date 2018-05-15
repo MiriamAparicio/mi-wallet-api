@@ -7,6 +7,10 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const pubsub = require('pubsub-js');
+
+const UpdateAccountBalance = require('./workers/update-account-balance');
+const UpdateUserBalance = require('./workers/update-user-balance');
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -25,14 +29,15 @@ mongoose.connect('mongodb://localhost/miwalletdb', {
   reconnectTries: Number.MAX_VALUE
 });
 
-// midelwares
+/** midelwares */
 
 app.use(cors({
   credentials: true,
   origin: ['http://localhost:4200']
 }));
 
-// session setup
+/** session setup */
+
 app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
@@ -58,16 +63,30 @@ app.use('/auth', auth);
 app.use('/accounts', accounts);
 app.use('/records', records);
 
-// catch 404 and forward to error handler
+/** pubsub */
+
+const updateAccountBalance = new UpdateAccountBalance();
+pubsub.subscribe('record.new', (msg, $event) => {
+  updateAccountBalance.exec($event.account);
+  console.log($event.account);
+})
+
+const updateUserBalance = new UpdateUserBalance();
+pubsub.subscribe('account.update', (msg, $event) => {
+  updateUserBalance.exec($event.owner)
+  console.log($event.owner);
+})
+
+/** catch 404 and forward to error handler */
+
 app.use((req, res, next) => {
   res.status(404).json({ code: 'not-found' });
 });
 
 app.use((err, req, res, next) => {
-  // always log the error
+  /** always log the error */
   console.error('ERROR', req.method, req.path, err);
-
-  // only render if the error ocurred before sending the response
+  /** only render if the error ocurred before sending the response */
   if (!res.headersSent) {
     res.status(500).json({ code: 'unexpected' });
   }
