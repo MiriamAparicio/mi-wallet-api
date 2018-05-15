@@ -68,7 +68,7 @@ router.post('/', (req, res, next) => {
 
       newAccount.save()
         .then((result) => {
-          res.status(201).json(result);
+          res.status(201).json(newAccount);
         })
         .catch(next);
     });

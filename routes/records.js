@@ -4,6 +4,17 @@ const router = express.Router();
 const Record = require('../models/record');
 const Account = require('../models/account')
 
+router.get('/', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ code: 'unauthorized' });
+  }
+  Record.find({ owner: req.session.currentUser._id })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch(next);
+});
+
 router.get('/latest', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ code: 'unauthorized' });
@@ -57,7 +68,7 @@ router.post('/', (req, res, next) =>  {
 
       newRecord.save()
         .then((result) => {
-          res.status(201).json(result);
+          res.status(201).json(newRecord);
         })
         .catch(next);
 
