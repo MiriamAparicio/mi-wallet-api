@@ -81,16 +81,14 @@ router.delete('/:id', (req, res, next) => {
       if (!result) {
         return res.status(404).json({ code: 'notfound' });
       }
-      Record.findByIdAndRemove({account: accountId})
-      .then((result) => {        
-      })
-      .catch(next);
-      
-      result.remove()
-        .then(() => {
-          res.json(result);
-        })
-        .catch(next);
+      if (!result.owner.equals(req.session.currentUser._id)) {
+        return res.status(401).json({ code: 'unauthorized' });
+      }    
+      return Record.remove({account: accountId})
+    })
+    .then(() => Account.remove({ _id: accountId }))
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 });

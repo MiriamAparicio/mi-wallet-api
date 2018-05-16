@@ -18,11 +18,9 @@ class UpdateUserBalance {
         for (let i = 0; i < accounts.length; i++) {
           userBalance += accounts[i].balance;
         }
-        console.log('****' +  userBalance);
-        User.update({_id: userId}, { $set: { balance: userBalance } })
-          .then((result) => {
-          })
+        return User.update({_id: userId}, { $set: { balance: userBalance } });
       })
+      .catch((err) => console.error('UpdateUserBalance::exec()', userId, err));
   }
 }
 

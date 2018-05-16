@@ -34,7 +34,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:4200']
+  origin: [process.env.CLIENT_URL]
 }));
 
 /** session setup */
@@ -69,13 +69,11 @@ app.use('/records', records);
 const updateAccountBalance = new UpdateAccountBalance();
 pubsub.subscribe('record.new', (msg, $event) => {
   updateAccountBalance.exec($event.account);
-  console.log($event.account);
 })
 
 const updateUserBalance = new UpdateUserBalance();
 pubsub.subscribe('account.update', (msg, $event) => {
   updateUserBalance.exec($event.owner)
-  console.log($event.owner);
 })
 
 /** catch 404 and forward to error handler */

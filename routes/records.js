@@ -37,6 +37,9 @@ router.get('/:id', (req, res, next) => {
 
   Record.findById(req.params.id)
     .then((result) => {
+      if (!result) {
+        return next();
+      }
       if (!result.owner.equals(req.session.currentUser._id)) {
         return res.status(401).json({ code: 'unauthorized' });
       }
@@ -54,9 +57,15 @@ router.post('/', (req, res, next) =>  {
   const date = req.body.date;
   const type = req.body.type.toLowerCase();
 
-  Account.find({$and:[{name: req.body.account},{owner: req.session.currentUser}]})
+  Account.findOne({_id: req.body.account})
     .then((result) => {
-      const account = result[0]._id;
+      if (!result) {
+        return next();
+      }
+      if (!result.owner.equals(req.session.currentUser._id)) {
+        return res.status(401).json({ code: 'unauthorized' });
+      }
+      const account = result._id;
       const owner = req.session.currentUser._id;
       const newRecord = new Record ({
         owner,
@@ -67,15 +76,14 @@ router.post('/', (req, res, next) =>  {
         type
       });
 
-      newRecord.save()
+      return newRecord.save()
         .then((result) => {
           res.status(201).json(newRecord);
-        })
-        .then(() => {
           pubsub.publish("record.new", newRecord);
         })
-        .catch(next);
-    });
+        
+    })
+    .catch(next);
 
 })
 

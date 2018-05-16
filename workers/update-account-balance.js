@@ -22,11 +22,12 @@ class UpdateAccountBalance {
             accountBalance += records[i].amount;
           }
         }
-        Account.findOneAndUpdate({_id: accountId},{ $set: { balance: accountBalance}})
-        .then((account) => {
-          pubsub.publish("account.update", account);
-        })
+        return Account.findOneAndUpdate({_id: accountId},{ $set: { balance: accountBalance}})
+          .then((account) => {
+            pubsub.publish("account.update", account);
+          });
       })
+      .catch((err) => console.error('UpdateAccountBalance::exec()', accountId, err));
   }
 }
 

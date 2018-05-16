@@ -3,7 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.json({ welcome: 'MyWallet API' });
+  res.json({ welcome: 'MiWallet API' });
 });
 
 module.exports = router;
