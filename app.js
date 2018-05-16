@@ -8,6 +8,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const pubsub = require('pubsub-js');
+require("dotenv").config();
 
 const UpdateAccountBalance = require('./workers/update-account-balance');
 const UpdateUserBalance = require('./workers/update-user-balance');
@@ -24,7 +25,7 @@ const records = require('./routes/records');
 const app = express();
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/miwalletdb', {
+mongoose.connect(process.env.MONGODB_URI, {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE
 });

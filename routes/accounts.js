@@ -74,5 +74,26 @@ router.post('/', (req, res, next) => {
     });
 });
 
+router.delete('/:id', (req, res, next) => {
+  const accountId = req.params.id
+  Account.findById(accountId)
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({ code: 'notfound' });
+      }
+      Record.findByIdAndRemove({account: accountId})
+      .then((result) => {        
+      })
+      .catch(next);
+      
+      result.remove()
+        .then(() => {
+          res.json(result);
+        })
+        .catch(next);
+    })
+    .catch(next);
+});
+
 
 module.exports = router;
