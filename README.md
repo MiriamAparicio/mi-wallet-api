@@ -16,7 +16,7 @@ User can:
 * See chart with records per category
 * Delete an account
 
-## Tecnologies
+## Technologies
 
 For the backend (this repository) I used Express generator, and some packages, the more interesting is [PubSub-JS](https://www.npmjs.com/package/pubsub-js) that is a messaging pattern that provides greater network scalability.
 
